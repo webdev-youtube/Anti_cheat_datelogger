@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Macro Logger – Scrap Clicker 2</title>
+<style>
+  /* Dark theme, simple layout */
+  :root {
+    --bg-color: #121212;
+    --primary-color: #bb86fc;
+    --secondary-color: #03dac6;
+    --text-color: #e0e0e0;
+    --input-bg: #1e1e1e;
+    --input-border: #333;
+    --button-bg: var(--primary-color);
+    --button-hover-bg: #9e6fed;
+    --error-color: #cf6679;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  h1 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    user-select: none;
+  }
+
+  form {
+    background-color: #222;
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 0 12px rgba(187, 134, 252, 0.5);
+    margin-bottom: 2rem;
+  }
+
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+  }
+
+  label {
+    flex: 1 1 100%;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    user-select: none;
+  }
+
+  select, input[type="number"] {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 5px;
+    color: var(--text-color);
+    padding: 0.4rem 0.6rem;
+    font-size: 1rem;
+    flex: 1 1 auto;
+    min-width: 80px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  select {
+    cursor: pointer;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  .time-selects {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  button {
+    background-color: var(--button-bg);
+    border: none;
+    border-radius: 6px;
+    color: var(--bg-color);
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+  }
+  button:hover {
+    background-color: var(--button-hover-bg);
+  }
+
+  #output-container {
+    max-width: 480px;
+    width: 100%;
+    background-color: #222;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(3, 218, 198, 0.5);
+    white-space: pre-wrap;
+    font-family: Consolas, 'Courier New', monospace;
+    color: var(--secondary-color);
+    min-height: 120px;
+    position: relative;
+  }
+
+  #copy-btn {
+    margin-top: 1rem;
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+    font-weight: 700;
+    border-radius: 6px;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+  }
+
+  #copy-btn:hover {
+    background-color: #02cbbf;
+  }
+
+  .flex-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 520px) {
+    form {
+      padding: 1rem 1rem;
+    }
+    .form-row {
+      flex-direction: column;
+    }
+    label {
+      margin-bottom: 0.5rem;
+    }
+    .time-selects > * {
+      min-width: 50px;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+</head>
+<body>
+<h1>Macro Logger – Scrap Clicker 2</h1>
+<form id="macroForm" autocomplete="off" spellcheck="false">
+  <!-- Date -->
+  <div class="form-row flex-row" style="gap:0.5rem; align-items: flex-start;">
+    <div style="flex:1 1 100%;">
+      <label for="day">Date</label>
+    </div>
+    <select id="day" name="day" aria-label="Day" required></select>
+    <select id="month" name="month" aria-label="Month" required></select>
+    <select id="year" name="year" aria-label="Year" required></select>
+  </div>
+
+  <!-- Start Time -->
+  <div class="form-row">
+    <label for="start-hour">Start Time</label>
+    <div class="time-selects">
+      <select id="start-hour" name="start-hour" aria-label="Start Hour" required></select>
+      <select id="start-minute" name="start-minute" aria-label="Start Minute" required></select>
+      <select id="start-ampm" name="start-ampm" aria-label="Start AM/PM" required>
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- End Time -->
+  <div class="form-row">
+    <label for="end-hour">End Time</label>
+    <div class="time-selects">
+      <select id="end-hour" name="end-hour" aria-label="End Hour" required></select>
+      <select id="end-minute" name="end-minute" aria-label="End Minute" required></select>
+      <select id="end-ampm" name="end-ampm" aria-label="End AM/PM" required>
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Magnets Before Start -->
+  <div class="form-row">
+    <label for="magnets-before">Magnets Before Start</label>
+    <input type="number" id="magnets-before" name="magnets-before" min="0" step="1" required />
+  </div>
+
+  <!-- Magnets After End -->
+  <div class="form-row">
+    <label for="magnets-after">Magnets After End</label>
+    <input type="number" id="magnets-after" name="magnets-after" min="0" step="1" required />
+  </div>
+
+  <!-- Macro Used -->
+  <div class="form-row">
+    <label for="macro-used">Macro Used</label>
+    <select id="macro-used" name="macro-used" required>
+      <option value="" disabled selected>Select Macro</option>
+      <option value="Auto Prestige Macro">Auto Prestige Macro</option>
+      <option value="Magnets Collector Macro">Magnets Collector Macro</option>
+    </select>
+  </div>
+
+  <!-- Anti-Macro Dialogs Triggered -->
+  <div class="form-row">
+    <label for="anti-dialogs">Anti-Macro Dialogs Triggered</label>
+    <input type="number" id="anti-dialogs" name="anti-dialogs" min="0" step="1" required />
+  </div>
+
+  <!-- Magnets per Anti-Macro Dialog -->
+  <div class="form-row">
+    <label for="magnets-per-dialog">Magnets per Anti-Macro Dialog</label>
+    <input type="number" id="magnets-per-dialog" name="magnets-per-dialog" min="0" step="1" required />
+  </div>
+
+  <div class="form-row" style="justify-content: center;">
+    <button type="submit" id="submit-btn">Submit</button>
+  </div>
+</form>
+
+<div id="output-container" aria-live="polite" aria-atomic="true" aria-label="Formatted Log Output"></div>
+<button id="copy-btn" style="display:none;">Copy Log</button>
+
+<script>
+  // Populate dropdowns for date and time inputs
+  function populateDropdown(id, start, end, padZero = false) {
+    const select = document.getElementById(id);
+    for (let i = start; i <= end; i++) {
+      const val = padZero ? (i < 10 ? '0' + i : i) : i.toString();
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = val;
+      select.appendChild(opt);
+    }
+  }
+
+  function populateDateDropdowns() {
+    populateDropdown('day', 1, 31, true);
+    const monthSelect = document.getElementById('month');
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    months.forEach((m, i) => {
+      const opt = document.createElement('option');
+      opt.value = (i + 1).toString().padStart(2, '0');
+      opt.textContent = m;
+      monthSelect.appendChild(opt);
+    });
+    const currentYear = new Date().getFullYear();
+    populateDropdown('year', currentYear - 5, currentYear + 5);
+  }
+
+  function populateTimeDropdowns() {
+    populateDropdown('start-hour', 1, 12);
+    populateDropdown('start-minute', 0, 59, true);
+    populateDropdown('end-hour', 1, 12);
+    populateDropdown('end-minute', 0, 59, true);
+  }
+
+  // Call populate functions on load
+  window.onload = () => {
+    populateDateDropdowns();
+    populateTimeDropdowns();
+
+    // Set default date selections to today
+    const now = new Date();
+    const daySel = document.getElementById('day');
+    const monthSel = document.getElementById('month');
+    const yearSel = document.getElementById('year');
+    daySel.value = now.getDate().toString().padStart(2, '0');
+    monthSel.value = (now.getMonth() + 1).toString().padStart(2, '0');
+    yearSel.value = now.getFullYear().toString();
+
+    // Default start and end times
+    document.getElementById('start-hour').value = '9';
+    document.getElementById('start-minute').value = '00';
+    document.getElementById('start-ampm').value = 'AM';
+    document.getElementById('end-hour').value = '10';
+    document.getElementById('end-minute').value = '00';
+    document.getElementById('end-ampm').value = 'AM';
+  };
+
+  // Helper: convert 12-hour time + am/pm to minutes from midnight
+  function toMinutes(hour12, minute, ampm) {
+    let hour = parseInt(hour12, 10);
+    const min = parseInt(minute, 10);
+    if (ampm === 'PM' && hour !== 12) {
+      hour += 12;
+    } else if (ampm === 'AM' && hour === 12) {
+      hour = 0;
+    }
+    return hour * 60 + min;
+  }
+
+  // Format minutes to H:mm
+  function formatDuration(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+  }
+
+  // Format time string hh:mm AM/PM
+  function formatTime(hour12, min, ampm) {
+    return `${hour12}:${min.toString().padStart(2, '0')} ${ampm}`;
+  }
+
+  // Form submit handler
+  document.getElementById('macroForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Collect Inputs
+    const day = document.getElementById('day').value;
+    const month = document.getElementById('month').value;
+    const year = document.getElementById('year').value;
+
+    const startH = document.getElementById('start-hour').value;
+    const startM = document.getElementById('start-minute').value;
+    const startAMPM = document.getElementById('start-ampm').value;
+
+    const endH = document.getElementById('end-hour').value;
+    const endM = document.getElementById('end-minute').value;
+    const endAMPM = document.getElementById('end-ampm').value;
+
+    const magnetsBefore = parseInt(document.getElementById('magnets-before').value, 10);
+    const magnetsAfter = parseInt(document.getElementById('magnets-after').value, 10);
+
+    const macroUsed = document.getElementById('macro-used').value;
+
+    const antiDialogs = parseInt(document.getElementById('anti-dialogs').value, 10);
+    const magnetsPerDialog = parseInt(document.getElementById('magnets-per-dialog').value, 10);
+
+    // Validate numeric inputs are not negative
+    if (
+      magnetsBefore < 0 || magnetsAfter < 0 || antiDialogs < 0 || magnetsPerDialog < 0
+    ) {
+      alert('Numeric inputs cannot be negative.');
+      return;
+    }
+
+    // Compute total duration in minutes
+    let startTotalMins = toMinutes(startH, startM, startAMPM);
+    let endTotalMins = toMinutes(endH, endM, endAMPM);
+
+    // If end time is before or equal to start time, assume end time is on next day
+    if (endTotalMins <= startTotalMins) {
+      endTotalMins += 24 * 60;
+    }
+    const durationMins = endTotalMins - startTotalMins;
+
+    // Magnets earned
+    const magnetsEarned = magnetsAfter - magnetsBefore;
+
+    // Magnets from anti-macro dialogs total
+    const antiMacroMagnets = antiDialogs * magnetsPerDialog;
+
+    // Magnets from normal farming
+    const normalFarmMagnets = magnetsEarned - antiMacroMagnets;
+
+    // Avoid negative normal farm if inputs inconsistent
+    const normalFarmSafe = normalFarmMagnets >= 0 ? normalFarmMagnets : 0;
+
+    // Calculate percentages safely (avoid division by zero)
+    const fromAntiPercent = magnetsEarned > 0 ? ((antiMacroMagnets / magnetsEarned) * 100).toFixed(1) : '0.0';
+    const fromNormalPercent = magnetsEarned > 0 ? ((normalFarmSafe / magnetsEarned) * 100).toFixed(1) : '0.0';
+
+    // Format date as MMM DD, YYYY (e.g. Jan 01, 2024)
+    const monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    const dateFormatted = `${monthNames[parseInt(month, 10) - 1]} ${parseInt(day, 10)}, ${year}`;
+
+    // Format times as hh:mm AM/PM
+    const startFormatted = formatTime(startH, startM, startAMPM);
+    const endFormatted = formatTime(endH, endM, endAMPM);
+
+    // Generate output text as specified
+    const outputText =
+`1) ${macroUsed}, -- ${dateFormatted}
+2) ${startFormatted} - ${endFormatted} (${formatDuration(durationMins)})
+3) ${magnetsBefore} \u2192 ${magnetsAfter} (Earned: ${magnetsEarned})
+4) Anti-Macro Dialogs: ${antiDialogs}
+5) From Anti-Macro: ${antiMacroMagnets} (${fromAntiPercent}%)
+   From Normal Farm: ${normalFarmSafe} (${fromNormalPercent}%)`;
+
+    // Display output
+    const outputContainer = document.getElementById('output-container');
+    outputContainer.textContent = outputText;
+
+    // Show copy button
+    const copyBtn = document.getElementById('copy-btn');
+    copyBtn.style.display = 'inline-block';
+  });
+
+  // Copy log button listener
+  document.getElementById('copy-btn').addEventListener('click', () => {
+    const outputContainer = document.getElementById('output-container');
+    const logText = outputContainer.textContent;
+    if (!logText) return;
+
+    navigator.clipboard.writeText(logText).then(() => {
+      // Provide visual feedback
+      const copyBtn = document.getElementById('copy-btn');
+      const originalText = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      copyBtn.disabled = true;
+      setTimeout(() => {
+        copyBtn.textContent = originalText;
+        copyBtn.disabled = false;
+      }, 1500);
+    }).catch(() => {
+      alert('Failed to copy log to clipboard.');
+    });
+  });
+</script>
+</body>
+</html>
+
+  
